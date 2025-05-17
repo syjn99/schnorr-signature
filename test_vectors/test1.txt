@@ -1,0 +1,13 @@
+[+] L: 20
+[+] N: 10
+[+] q: 947
+[+] p: 687523
+[+] g: 126172
+[+] x: 592
+[+] y: 594448
+[+] k: 525
+[+] r: 151837
+[+] m: abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq
+[+] H(m): 146
+[+] s: 745
+[+] e: 813

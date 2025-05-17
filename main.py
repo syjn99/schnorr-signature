@@ -7,6 +7,7 @@ import time
 from keygen import KeyPair
 from paramgen import PublicParameters
 from signature import Signature
+from test import test_with_vector
 
 
 def main():
@@ -60,6 +61,14 @@ def main():
     bench.add_argument("--l", type=int, help="(Optional) Bit length of p")
     bench.add_argument("--n", type=int, help="(Optional) Bit length of q")
     bench.add_argument("--param_file", type=str, help="(Optional) Path to the public parameters file")
+
+    test = subparsers.add_parser("test", help="Run tests for the Schnorr signature scheme with given test vectors")
+    test.add_argument(
+        "--test_vector_file",
+        type=str,
+        required=True,
+        help="Path to the test vector file",
+    )
 
     args = parser.parse_args()
 
@@ -146,6 +155,9 @@ def main():
         end_time = time.time()
 
         print(f"Benchmarking completed in {end_time - start_time:.2f} seconds.")
+    elif args.command == "test":
+        test_with_vector(args.test_vector_file)
+        print("Test completed.")
     else:
         raise Exception("Invalid command")
 
