@@ -1,6 +1,6 @@
 import json
 
-from sympy import isprime
+from prime import is_order_of_q, is_prime
 
 
 class PublicParameters:
@@ -27,11 +27,11 @@ class PublicParameters:
             assert (args.p - 1) % args.q == 0, "q must divide (p-1)."
 
             # Check if p and q are prime
-            assert isprime(args.p), "p must be a prime number."
-            assert isprime(args.q), "q must be a prime number."
+            assert is_prime(args.p), "p must be a prime number."
+            assert is_prime(args.q), "q must be a prime number."
 
             # Check if g is a generator of the group of order q
-            assert pow(args.g, args.q, args.p) == 1 and pow(args.g, 1, args.p) != 1, "g must be a generator of the group of order q."
+            assert is_order_of_q(g=args.g, q=args.q, p=args.p), "g must be a generator of the group of order q."
 
             return cls(args.p, args.q, args.g)
         else:
