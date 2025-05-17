@@ -70,3 +70,14 @@ class PublicParameters:
         """
         data = json.loads(json_str)
         return cls(data["p"], data["q"], data["g"])
+
+    def validate(self):
+        """
+        Validate the public parameters.
+        """
+        assert self.p > 0 and self.q > 0 and self.g > 0, "p, q, and g must be positive integers."
+        assert self.p > self.q, "p must be greater than q."
+        assert (self.p - 1) % self.q == 0, "q must divide (p-1)."
+        assert is_prime(self.p), "p must be a prime number."
+        assert is_prime(self.q), "q must be a prime number."
+        assert is_order_of_q(g=self.g, q=self.q, p=self.p), "g must be a generator of the group of order q."

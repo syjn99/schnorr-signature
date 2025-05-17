@@ -26,6 +26,7 @@ def main():
     paramgen.add_argument("--p", type=int, help="(Optional) Prime number p")
     paramgen.add_argument("--q", type=int, help="(Optional) Prime number q")
     paramgen.add_argument("--g", type=int, help="(Optional) Generator g")
+    paramgen.add_argument("--validate", type=bool, default=False, help="Validate the parameters")
 
     keygen = subparsers.add_parser("keygen", help="Generate keypair for Schnorr signature scheme")
     keygen.add_argument(
@@ -79,6 +80,12 @@ def main():
         with open(args.output, "w") as f:
             f.write(param.to_json())
         print(f"Public parameters saved to {args.output}")
+
+        if args.validate:
+            print("Validating the parameters...")
+            param.validate()
+            print("Parameters are valid.")
+
     elif args.command == "keygen":
         key = KeyPair.from_args(args)
 

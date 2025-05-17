@@ -13,7 +13,8 @@
   - [Solutions to Questions](#solutions-to-questions)
     - [Question 2: $L, N$ less than $20$](#question-2-l-n-less-than-20)
   - [Question 3: $L, N$ less than $64$](#question-3-l-n-less-than-64)
-  - [Question 5: $(L, N) = (2048, 256)$](#question-5-l-n--2048-256)
+    - [Question 5: $(L, N) = (2048, 256)$](#question-5-l-n--2048-256)
+    - [Question 7: Parameter Generation for $(L, N) = (2048, 256)$](#question-7-parameter-generation-for-l-n--2048-256)
 
 
 Simple Python implementation of Schnorr Signature Scheme using [gmpy2](https://gmpy2.readthedocs.io/en/latest/).
@@ -207,7 +208,7 @@ Signature is valid.
 Benchmarking completed in 0.00 seconds.
 ```
 
-## Question 5: $(L, N) = (2048, 256)$
+### Question 5: $(L, N) = (2048, 256)$
 
 ```sh
 uv run main.py bench --l 2048 --n 256
@@ -240,4 +241,26 @@ Signature:
 Verifying the signature...
 Signature is valid.
 Benchmarking completed in 0.15 seconds.
+```
+
+### Question 7: Parameter Generation for $(L, N) = (2048, 256)$
+
+[Question 6](#question-5-l-n--2048-256) contains generating fresh public parameters, but to be more clear, I added a `--validate` flag for `paramgen`. It will check(See validation logic at [`paramgen.py`](./paramgen.py)):
+
+1. Is $q \mid (p-1)$?
+2. Is $p$ and $q$ are prime?
+3. Is the order of $g$ equal to $q$?
+
+To run the command, add `--validate` as follow:
+
+```sh
+$ uv run main.py paramgen --l 2048 --n 256 --validate true
+```
+
+This will print like:
+
+```plaintext
+Public parameters saved to params/param.json
+Validating the parameters...
+Parameters are valid.
 ```
