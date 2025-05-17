@@ -54,6 +54,9 @@ class PublicParameters:
         """
         return json.dumps({"p": self.p, "q": self.q, "g": self.g})
 
+    def to_dict(self):
+        return {"p": self.p, "q": self.q, "g": self.g}
+
     @classmethod
     def from_json(cls, json_str: str) -> "PublicParameters":
         """

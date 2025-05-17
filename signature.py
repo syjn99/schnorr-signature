@@ -10,21 +10,32 @@ sha = hashlib.sha256
 
 
 class Signature:
-    def __init__(self, s: int, e: int):
+    def __init__(self, s: int, e: int, m: str, param: PublicParameters):
         self.s = s
         self.e = e
+        self.m = m
+        self.param = param
 
     def __repr__(self):
-        return f"Signature(s={self.s}, e={self.e})"
+        return f"Signature(s={self.s}, e={self.e}, m={self.m}, param={self.param})"
 
     def __str__(self):
-        return f"Signature:\n s: {self.s}\n e: {self.e}"
+        return (
+            "Signature:\n"
+            f"  s: {self.s}\n"
+            f"  e: {self.e}\n"
+            f"  m: {self.m}\n"
+            "  Public Parameters:\n"
+            f"    p: {self.param.p}\n"
+            f"    q: {self.param.q}\n"
+            f"    g: {self.param.g}"
+        )
 
     def to_json(self) -> str:
         """
         Serialize the object to a JSON string.
         """
-        return json.dumps({"s": self.s, "e": self.e})
+        return json.dumps({"s": self.s, "e": self.e, "m": self.m, "param": self.param.to_dict()})
 
     @classmethod
     def from_json(cls, json_str: str):
@@ -32,7 +43,7 @@ class Signature:
         Deserialize the object from a JSON string.
         """
         data = json.loads(json_str)
-        return cls(data["s"], data["e"])
+        return cls(data["s"], data["e"], data["m"], PublicParameters(p=data["param"]["p"], q=data["param"]["q"], g=data["param"]["g"]))
 
     @classmethod
     def sign(cls, m: str, param: PublicParameters, keypair: KeyPair, k: int = None) -> "Signature":
@@ -52,4 +63,4 @@ class Signature:
         e = int.from_bytes(e, byteorder="big") >> (256 - n)
 
         s = (keypair.secret_key * e + k) % param.q
-        return cls(s, e)
+        return cls(s, e, m, param)
