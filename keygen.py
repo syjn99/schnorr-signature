@@ -1,4 +1,5 @@
 import json
+import random
 
 
 class KeyPair:
@@ -36,7 +37,17 @@ class KeyPair:
 
             return cls(y, x)
         else:
-            raise Exception("Not yet implemented")
+            with open(args.param_file) as f:
+                param = json.load(f)
+                p = param["p"]
+                q = param["q"]
+                g = param["g"]
+
+            # Randomly generate x and compute y
+            x = random.randint(1, q - 1)
+            y = pow(g, x, p)
+
+            return cls(y, x)
 
     def to_json(self) -> str:
         """
@@ -51,10 +62,3 @@ class KeyPair:
         """
         data = json.loads(json_str)
         return cls(data["public_key"], data["secret_key"])
-
-
-def generate_key():
-    """
-    Generates a keypair for Schnorr signatures.
-    """
-    print("Generating key...")
