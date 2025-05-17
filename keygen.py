@@ -1,6 +1,8 @@
 import json
 import random
 
+from paramgen import PublicParameters
+
 
 class KeyPair:
     def __init__(self, public_key: int, secret_key: int):
@@ -38,16 +40,19 @@ class KeyPair:
             return cls(y, x)
         else:
             with open(args.param_file) as f:
-                param = json.load(f)
-                p = param["p"]
-                q = param["q"]
-                g = param["g"]
+                param = PublicParameters.from_json(f.read())
+            return cls.from_param(param)
 
-            # Randomly generate x and compute y
-            x = random.randint(1, q - 1)
-            y = pow(g, x, p)
+    @classmethod
+    def from_param(cls, param: PublicParameters) -> "KeyPair":
+        """
+        Create KeyPair from PublicParameters.
+        """
+        # Randomly generate x and compute y
+        x = random.randint(1, param.q - 1)
+        y = pow(param.g, x, param.p)
 
-            return cls(y, x)
+        return cls(y, x)
 
     def to_json(self) -> str:
         """
