@@ -1,6 +1,6 @@
 import json
 
-from prime import is_order_of_q, is_prime
+from prime import get_n_bit_prime, get_p_from_q, is_order_of_q, is_prime, select_generator
 
 
 class PublicParameters:
@@ -21,7 +21,7 @@ class PublicParameters:
         Create PublicParameters from command line arguments.
         """
         if args.p and args.q and args.g:
-            # Basic checks
+            # Sanity checks
             assert args.p > 0 and args.q > 0 and args.g > 0, "p, q, and g must be positive integers."
             assert args.p > args.q, "p must be greater than q."
             assert (args.p - 1) % args.q == 0, "q must divide (p-1)."
@@ -35,8 +35,18 @@ class PublicParameters:
 
             return cls(args.p, args.q, args.g)
         else:
-            # Generate with l and n
-            raise Exception("Not yet implemented")
+            # Sanity checks
+            assert args.l > 0 and args.n > 0, "l and n must be positive integers."
+            assert args.l > args.n, "l must be greater than n."
+
+            # Generate prime p and q with l and n
+            q = get_n_bit_prime(args.n)
+            p = get_p_from_q(args.l, q)
+
+            # Select a generator g of order q
+            g = select_generator(p, q)
+
+            return cls(p, q, g)
 
     def to_json(self) -> str:
         """
