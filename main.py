@@ -45,6 +45,14 @@ def main():
     sign.add_argument("--message", type=str, required=True, help="Message to sign")
     sign.add_argument("--k", type=int, help="(Optional) Random integer k for signing")
 
+    verify = subparsers.add_parser("verify", help="Verify a Schnorr signature")
+    verify.add_argument(
+        "--signature_file",
+        type=str,
+        required=True,
+        help="Path to the signature file",
+    )
+
     args = parser.parse_args()
 
     if args.command == "paramgen":
@@ -69,13 +77,23 @@ def main():
             key = KeyPair.from_json(f.read())
 
         signature = Signature.sign(args.message, param, key, args.k)
-        print(f"Signature: {signature}")
+        print(f"{signature}")
 
         if args.output:
             os.makedirs(os.path.dirname(args.output), exist_ok=True)
             with open(args.output, "w") as f:
                 f.write(signature.to_json())
             print(f"Signature saved to {args.output}")
+    elif args.command == "verify":
+        with open(args.signature_file) as f:
+            signature = Signature.from_json(f.read())
+
+        # Verify the signature
+        is_valid = Signature.verify(signature)
+        if is_valid:
+            print("Signature is valid.")
+        else:
+            print("Signature is invalid.")
 
 
 if __name__ == "__main__":
