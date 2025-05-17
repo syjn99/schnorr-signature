@@ -35,18 +35,24 @@ class PublicParameters:
 
             return cls(args.p, args.q, args.g)
         else:
-            # Sanity checks
-            assert args.l > 0 and args.n > 0, "l and n must be positive integers."
-            assert args.l > args.n, "l must be greater than n."
+            return cls.from_bit_length(args.l, args.n)
 
-            # Generate prime p and q with l and n
-            q = get_n_bit_prime(args.n)
-            p = get_p_from_q(args.l, q)
+    @classmethod
+    def from_bit_length(cls, l: int, n: int) -> "PublicParameters":
+        """
+        Generate public parameters with bit lengths l and n.
+        """
+        assert l > 0 and n > 0, "l and n must be positive integers."
+        assert l > n, "l must be greater than n."
 
-            # Select a generator g of order q
-            g = select_generator(p, q)
+        # Generate prime p and q with l and n
+        q = get_n_bit_prime(n)
+        p = get_p_from_q(l, q)
 
-            return cls(p, q, g)
+        # Select a generator g of order q
+        g = select_generator(p, q)
+
+        return cls(p, q, g)
 
     def to_json(self) -> str:
         """

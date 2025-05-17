@@ -1,5 +1,8 @@
 import argparse
 import os
+import random
+import string
+import time
 
 from keygen import KeyPair
 from paramgen import PublicParameters
@@ -53,6 +56,11 @@ def main():
         help="Path to the signature file",
     )
 
+    bench = subparsers.add_parser("bench", help="Benchmark the Schnorr signature scheme")
+    bench.add_argument("--l", type=int, help="(Optional) Bit length of p")
+    bench.add_argument("--n", type=int, help="(Optional) Bit length of q")
+    bench.add_argument("--param_file", type=str, help="(Optional) Path to the public parameters file")
+
     args = parser.parse_args()
 
     if args.command == "paramgen":
@@ -94,6 +102,52 @@ def main():
             print("Signature is valid.")
         else:
             print("Signature is invalid.")
+    elif args.command == "bench":
+        print("Benchmarking the Schnorr signature scheme...")
+
+        start_time = time.time()
+
+        if args.param_file:
+            print(f"Loading parameters from {args.param_file}")
+            with open(args.param_file) as f:
+                param = PublicParameters.from_json(f.read())
+        else:
+            print("Generating new parameters...")
+            param = PublicParameters.from_bit_length(args.l, args.n)
+        print(f"{param}")
+
+        print()
+
+        print("Keypair generation...")
+        key = KeyPair.from_param(param)
+        print(f"{key}")
+
+        print()
+
+        # Generate a random message with a fixed length
+        length = 50
+        random_string = "".join(random.choices(string.ascii_letters + string.digits, k=length))
+
+        print(f"Signing the message: {random_string}")
+
+        # Sign the message
+        signature = Signature.sign(random_string, param, key)
+        print(f"{signature}")
+
+        print()
+
+        # Verify the signature
+        print("Verifying the signature...")
+        is_valid = Signature.verify(signature)
+        if is_valid:
+            print("Signature is valid.")
+        else:
+            print("Signature is invalid.")
+        end_time = time.time()
+
+        print(f"Benchmarking completed in {end_time - start_time:.2f} seconds.")
+    else:
+        raise Exception("Invalid command")
 
 
 if __name__ == "__main__":
